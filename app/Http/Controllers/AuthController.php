@@ -45,18 +45,20 @@ class AuthController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|max:100',
-            'password' => 'required|min:6|confirmed',
+            'password' => 'required|min:6',
         ], [
-            'name.required' => 'Nama wajib diisi.',
+            'name.required' => 'Username wajib diisi.',
+            'name.max' => 'Username maksimal 100 karakter.',
             'password.required' => 'Password wajib diisi.',
             'password.min' => 'Password minimal 6 karakter.',
-            'password.confirmed' => 'Konfirmasi password tidak sesuai.',
         ]);
+
+        $role = User::exists() ? 'karyawan' : 'admin';
 
         User::create([
             'name' => $data['name'],
-            'password' => Hash::make($data['password']),
-            'role' => 'karyawan',
+            'password' => $data['password'],
+            'role' => $role,
         ]);
 
         return redirect()

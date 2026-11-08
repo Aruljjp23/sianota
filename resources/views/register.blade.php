@@ -274,7 +274,7 @@
                 <div class="form-group">
 
                     <label for="name" class="form-label">
-                        Nama Lengkap
+                        Username
                     </label>
 
                     <div class="input-wrapper">
@@ -286,7 +286,7 @@
                             id="name"
                             name="name"
                             class="form-input"
-                            placeholder="Masukkan nama lengkap"
+                            placeholder="Masukkan username"
                             value="{{ old('name') }}"
                             autocomplete="name"
                             required
@@ -322,51 +322,12 @@
                             id="togglePassword"
                             aria-label="Tampilkan password"
                         >
-
                             <i class="fa-solid fa-eye"></i>
-
                         </button>
 
                     </div>
 
                 </div>
-
-
-                <div class="form-group">
-
-                    <label for="password_confirmation" class="form-label">
-                        Konfirmasi Password
-                    </label>
-
-                    <div class="input-wrapper">
-
-                        <i class="fa-solid fa-lock input-icon"></i>
-
-                        <input
-                            type="password"
-                            id="password_confirmation"
-                            name="password_confirmation"
-                            class="form-input"
-                            placeholder="Ulangi password"
-                            autocomplete="new-password"
-                            required
-                        >
-
-                        <button
-                            type="button"
-                            class="password-toggle"
-                            id="togglePasswordConfirmation"
-                            aria-label="Tampilkan password"
-                        >
-
-                            <i class="fa-solid fa-eye"></i>
-
-                        </button>
-
-                    </div>
-
-                </div>
-
 
                 <button type="submit" class="login-button">
                     Register
@@ -391,7 +352,6 @@
 
 
     <script>
-
         const togglePassword = document.getElementById('togglePassword');
         const passwordInput = document.getElementById('password');
 
@@ -407,24 +367,6 @@
             icon.classList.toggle('fa-eye-slash', isPassword);
 
         });
-
-
-        const togglePasswordConfirmation = document.getElementById('togglePasswordConfirmation');
-        const passwordConfirmation = document.getElementById('password_confirmation');
-
-        togglePasswordConfirmation.addEventListener('click', function () {
-
-            const isPassword = passwordConfirmation.type === 'password';
-
-            passwordConfirmation.type = isPassword ? 'text' : 'password';
-
-            const icon = this.querySelector('i');
-
-            icon.classList.toggle('fa-eye', !isPassword);
-            icon.classList.toggle('fa-eye-slash', isPassword);
-
-        });
-
     </script>
 
 </body>

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -53,20 +52,19 @@ class UserController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|string|min:6',
             'role' => ['required', Rule::in(['admin', 'karyawan'])],
         ], [
             'name.required' => 'Nama lengkap wajib diisi.',
             'password.required' => 'Password wajib diisi.',
             'password.min' => 'Password minimal 6 karakter.',
-            'password.confirmed' => 'Konfirmasi password tidak sesuai.',
             'role.required' => 'Role user wajib dipilih.',
             'role.in' => 'Role yang dipilih tidak valid.',
         ]);
 
         User::create([
             'name' => $validated['name'],
-            'password' => Hash::make($validated['password']),
+            'password' => $validated['password'],
             'role' => $validated['role'],
         ]);
 
@@ -81,12 +79,11 @@ class UserController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'password' => 'nullable|string|min:6|confirmed',
+            'password' => 'nullable|string|min:6',
             'role' => ['required', Rule::in(['admin', 'karyawan'])],
         ], [
             'name.required' => 'Nama lengkap wajib diisi.',
             'password.min' => 'Password minimal 6 karakter.',
-            'password.confirmed' => 'Konfirmasi password tidak sesuai.',
             'role.required' => 'Role user wajib dipilih.',
             'role.in' => 'Role yang dipilih tidak valid.',
         ]);
@@ -95,7 +92,7 @@ class UserController extends Controller
         $user->role = $validated['role'];
 
         if (!empty($validated['password'])) {
-            $user->password = Hash::make($validated['password']);
+            $user->password = $validated['password'];
         }
 
         $user->save();

@@ -85,7 +85,7 @@ class LaporanController extends Controller
 
         return $query;
     }
-
+    
     private function ambilLaporan(
         Request $request,
         string $jenis,
@@ -108,6 +108,11 @@ class LaporanController extends Controller
         ) {
             $tanggal = $item->{$kolomTanggal};
 
+            $namaPenghadap = $item->penghadap
+                ->pluck('nama_penghadap')
+                ->filter()
+                ->implode(', ');
+
             return [
                 'nomor' => $item->{$kolomNomor} ?? '-',
                 'tanggal' => $tanggal
@@ -117,7 +122,7 @@ class LaporanController extends Controller
                 'alamat' => $jenis === 'skmht'
                     ? ($item->alamat ?: '-')
                     : '-',
-                'penghadap' => $item->penghadap?->nama_penghadap ?? '-',
+                'penghadap' => $namaPenghadap ?: '-',
             ];
         };
 

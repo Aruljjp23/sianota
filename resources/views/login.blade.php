@@ -208,9 +208,27 @@
             text-decoration: underline;
         }
 
+        .form-input.is-invalid {
+            border-color: #dc3545;
+            background: #fffafa;
+        }
+
+        .form-input.is-invalid:focus {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+        }
+
+        .field-error {
+            display: block;
+            margin-top: 6px;
+            color: #dc3545;
+            font-size: 11.5px;
+        }
+
         .error-message {
             margin-bottom: 18px;
-            padding: 10px 12px;
+            padding: 11px 13px;
+            border: 1px solid #f5c2c7;
             border-radius: 8px;
             background: #fff1f1;
             color: #b42318;
@@ -257,9 +275,10 @@
 
             <h2 class="login-title">Login</h2>
 
-            @if ($errors->any())
+            @if ($errors->has('login'))
                 <div class="error-message">
-                    {{ $errors->first() }}
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    {{ $errors->first('login') }}
                 </div>
             @endif
 
@@ -267,15 +286,30 @@
                 @csrf
 
                 <div class="form-group">
-                    <label for="username" class="form-label">
+                    <label for="name" class="form-label">
                         Username
                     </label>
 
                     <div class="input-wrapper">
                         <i class="fa-solid fa-user input-icon"></i>
 
-                        <input type="text" id="name" name="name" class="form-input" placeholder="Masukkan username" value="{{ old('name') }}" autocomplete="name" required autofocus>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            class="form-input @error('name') is-invalid @enderror"
+                            placeholder="Masukkan username"
+                            value="{{ old('name') }}"
+                            maxlength="100"
+                            autocomplete="username"
+                            required
+                            autofocus
+                        >
                     </div>
+
+                    @error('name')
+                        <small class="field-error">{{ $message }}</small>
+                    @enderror
                 </div>
 
                 <div class="form-group">
@@ -286,17 +320,36 @@
                     <div class="input-wrapper">
                         <i class="fa-solid fa-lock input-icon"></i>
 
-                        <input type="password" id="password" name="password" class="form-input" placeholder="Masukkan password" autocomplete="current-password" required>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="form-input @error('password') is-invalid @enderror"
+                            placeholder="Masukkan password"
+                            maxlength="100"
+                            autocomplete="current-password"
+                            required
+                        >
 
-                        <button type="button" class="password-toggle" id="togglePassword" aria-label="Tampilkan password">
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            id="togglePassword"
+                            aria-label="Tampilkan password"
+                        >
                             <i class="fa-solid fa-eye"></i>
                         </button>
                     </div>
+
+                    @error('password')
+                        <small class="field-error">{{ $message }}</small>
+                    @enderror
                 </div>
 
                 <button type="submit" class="login-button">
                     Login
                 </button>
+
             </form>
 
             <p class="register-text">

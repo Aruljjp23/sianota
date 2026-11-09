@@ -13,27 +13,55 @@ class AuthController extends Controller
     {
         return view('login');
     }
-
+    
     public function loginProcess(Request $request)
     {
-        $login = $request->validate([
-            'name' => 'required',
-            'password' => 'required',
+        $credentials = $request->validate([
+            'name' => 'required|string|max:100',
+            'password' => 'required|string|max:100',
+        ], [
+            'name.required' => 'Username wajib diisi.',
+            'name.string' => 'Username harus berupa teks.',
+            'name.max' => 'Username maksimal 100 karakter.',
+
+            'password.required' => 'Password wajib diisi.',
+            'password.string' => 'Password harus berupa teks.',
+            'password.max' => 'Password maksimal 100 karakter.',
         ]);
 
-        if (Auth::attempt($login)) {
-            $request->session()->regenerate();
+        $user = User::whereRaw('BINARY name = ?', [
+            $credentials['name']
+        ])->first();
 
-            if (Auth::user()->role === 'admin') {
-                return redirect()->route('admin.dashboard')->with('show_login_loading', true);
-            }
-
-            return redirect()->route('karyawan.homepage')->with('show_login_loading', true);
+        if (!$user) {
+            return back()
+                ->withErrors([
+                    'name' => 'Username tidak sesuai dengan data yang terdaftar.',
+                ])
+                ->withInput($request->only('name'));
         }
 
-        return back()->withErrors([
-            'username' => 'Username atau password salah.',
-        ])->withInput();
+        if (!Hash::check($credentials['password'], $user->password)) {
+            return back()
+                ->withErrors([
+                    'password' => 'Password yang kamu masukkan salah.',
+                ])
+                ->withInput($request->only('name'));
+        }
+
+        Auth::login($user);
+
+        $request->session()->regenerate();
+
+        if ($user->role === 'admin') {
+            return redirect()
+                ->route('admin.dashboard')
+                ->with('show_login_loading', true);
+        }
+
+        return redirect()
+            ->route('karyawan.homepage')
+            ->with('show_login_loading', true);
     }
 
     public function register()
@@ -44,13 +72,17 @@ class AuthController extends Controller
     public function registerProcess(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|max:100',
-            'password' => 'required|min:6',
+            'name' => 'required|string|max:100',
+            'password' => 'required|string|min:6|max:100',
         ], [
             'name.required' => 'Username wajib diisi.',
+            'name.string' => 'Username harus berupa teks.',
             'name.max' => 'Username maksimal 100 karakter.',
+
             'password.required' => 'Password wajib diisi.',
+            'password.string' => 'Password harus berupa teks.',
             'password.min' => 'Password minimal 6 karakter.',
+            'password.max' => 'Password maksimal 100 karakter.',
         ]);
 
         $role = User::exists() ? 'karyawan' : 'admin';

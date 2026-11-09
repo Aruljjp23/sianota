@@ -189,21 +189,28 @@
                         <div>
                             <span>Nama Penghadap</span>
                             <strong>
-                                {{ $skmht->penghadap ? '1 Penghadap' : '0 Penghadap' }}
+                                {{ $skmht->penghadap->count() }}
+                                Penghadap
                             </strong>
                         </div>
                     </div>
 
                     <div class="penghadap-list">
-                        @if ($skmht->penghadap)
+
+                        @forelse ($skmht->penghadap as $penghadap)
+
                             <span class="penghadap-name">
-                                {{ $skmht->penghadap->nama_penghadap }}
+                                {{ $penghadap->nama_penghadap }}
                             </span>
-                        @else
+
+                        @empty
+
                             <span class="empty-penghadap">
                                 Belum ada nama penghadap
                             </span>
-                        @endif
+
+                        @endforelse
+
                     </div>
 
                 </div>

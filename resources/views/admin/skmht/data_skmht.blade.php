@@ -490,7 +490,7 @@
                 'tanggal_format' => $item->tanggal_akta->format('d M Y'),
                 'sifat_jenis_akta' => $item->sifat_jenis_akta,
                 'alamat' => $item->alamat,
-                'nama_penghadap' => $item->penghadap?->nama_penghadap ?? '-',
+                'nama_penghadap' => $item->penghadap->pluck('nama_penghadap')->values()->all(),
             ];
         })->values()->all()
     ) }};

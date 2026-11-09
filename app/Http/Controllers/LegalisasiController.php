@@ -64,6 +64,22 @@ class LegalisasiController extends Controller
 
     private function validateData(Request $request): array
     {
+        $namaPenghadap = $request->input('nama_penghadap', []);
+
+        if (!is_array($namaPenghadap)) {
+            $namaPenghadap = [$namaPenghadap];
+        }
+
+        $namaPenghadap = collect($namaPenghadap)
+            ->map(function ($nama) {
+                return is_string($nama) ? trim($nama) : $nama;
+            })
+            ->filter(function ($nama) {
+                return $nama !== '';
+            })
+            ->values()
+            ->all();
+
         $request->merge([
             'no_urut' => is_string($request->input('no_urut'))
                 ? trim($request->input('no_urut'))
@@ -73,23 +89,39 @@ class LegalisasiController extends Controller
                 ? trim($request->input('sifat_surat'))
                 : $request->input('sifat_surat'),
 
-            'nama_penghadap' => is_string($request->input('nama_penghadap'))
-                ? trim($request->input('nama_penghadap'))
-                : $request->input('nama_penghadap'),
+            'nama_penghadap' => $namaPenghadap,
         ]);
 
         return $request->validate([
             'no_urut' => ['required', 'string', 'max:30'],
             'tanggal' => ['required', 'date'],
             'sifat_surat' => ['required', 'string', 'max:150'],
-            'nama_penghadap' => ['required', 'string', 'max:150'],
+            'nama_penghadap' => ['required', 'array', 'min:1'],
+            'nama_penghadap.*' => ['required', 'string', 'max:150'],
         ], [
             'no_urut.required' => 'Nomor urut wajib diisi.',
             'tanggal.required' => 'Tanggal wajib diisi.',
             'sifat_surat.required' => 'Sifat surat wajib diisi.',
             'nama_penghadap.required' => 'Nama penghadap wajib diisi.',
-            'nama_penghadap.max' => 'Nama penghadap maksimal 150 karakter.',
+            'nama_penghadap.array' => 'Format nama penghadap tidak valid.',
+            'nama_penghadap.min' => 'Minimal harus ada satu nama penghadap.',
+            'nama_penghadap.*.required' => 'Nama penghadap tidak boleh kosong.',
+            'nama_penghadap.*.string' => 'Nama penghadap harus berupa teks.',
+            'nama_penghadap.*.max' => 'Setiap nama penghadap maksimal 150 karakter.',
         ]);
+    }
+
+    private function simpanPenghadap(Legalisasi $legalisasi, array $namaPenghadap): void
+    {
+        $legalisasi->penghadap()->createMany(
+            collect($namaPenghadap)
+                ->map(function ($nama) {
+                    return [
+                        'nama_penghadap' => $nama,
+                    ];
+                })
+                ->all()
+        );
     }
 
     private function halamanData(Request $request, bool $modeKelola)
@@ -107,7 +139,10 @@ class LegalisasiController extends Controller
                     'no_urut' => $item->no_urut,
                     'tanggal' => $item->tanggal?->format('Y-m-d'),
                     'sifat_surat' => $item->sifat_surat,
-                    'nama_penghadap' => $item->penghadap?->nama_penghadap ?? '',
+                    'nama_penghadap' => $item->penghadap
+                        ->pluck('nama_penghadap')
+                        ->values()
+                        ->all(),
                 ];
             })
             ->values();
@@ -147,7 +182,10 @@ class LegalisasiController extends Controller
                     'no_urut' => $item->no_urut,
                     'tanggal' => $item->tanggal?->format('Y-m-d'),
                     'sifat_surat' => $item->sifat_surat,
-                    'nama_penghadap' => $item->penghadap?->nama_penghadap ?? '',
+                    'nama_penghadap' => $item->penghadap
+                        ->pluck('nama_penghadap')
+                        ->values()
+                        ->all(),
                 ];
             })
             ->values();
@@ -172,9 +210,10 @@ class LegalisasiController extends Controller
                 'sifat_surat' => $validated['sifat_surat'],
             ]);
 
-            $legalisasi->penghadap()->create([
-                'nama_penghadap' => $validated['nama_penghadap'],
-            ]);
+            $this->simpanPenghadap(
+                $legalisasi,
+                $validated['nama_penghadap']
+            );
         });
 
         return redirect()
@@ -195,9 +234,11 @@ class LegalisasiController extends Controller
                 'sifat_surat' => $validated['sifat_surat'],
             ]);
 
-            $legalisasi->penghadap()->updateOrCreate(
-                [],
-                ['nama_penghadap' => $validated['nama_penghadap']]
+            $legalisasi->penghadap()->delete();
+
+            $this->simpanPenghadap(
+                $legalisasi,
+                $validated['nama_penghadap']
             );
         });
 

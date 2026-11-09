@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
+    
     public function dashboard()
     {
         abort_unless(
@@ -20,7 +21,6 @@ class DashboardController extends Controller
         $totalSkmht = Skmht::count();
         $totalLegalisasi = Legalisasi::count();
 
-        
         $skmhtTerbaru = Skmht::with('penghadap')
             ->latest('tanggal_akta')
             ->latest('id_skmht')
@@ -29,7 +29,9 @@ class DashboardController extends Controller
             ->map(function ($item) {
                 return [
                     'jenis' => 'SKMHT',
-                    'nama' => $item->penghadap?->nama_penghadap ?? '-',
+                    'nama' => $item->penghadap
+                        ->pluck('nama_penghadap')
+                        ->implode(', ') ?: '-',
                     'tanggal' => $item->tanggal_akta
                         ? \Carbon\Carbon::parse($item->tanggal_akta)
                             ->format('d M Y')
@@ -46,7 +48,9 @@ class DashboardController extends Controller
             ->map(function ($item) {
                 return [
                     'jenis' => 'Legalisasi',
-                    'nama' => $item->penghadap?->nama_penghadap ?? '-',
+                    'nama' => $item->penghadap
+                        ->pluck('nama_penghadap')
+                        ->implode(', ') ?: '-',
                     'tanggal' => $item->tanggal
                         ? \Carbon\Carbon::parse($item->tanggal)
                             ->format('d M Y')

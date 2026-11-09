@@ -102,10 +102,16 @@ class SkmhtController extends Controller
 
     private function validateData(Request $request): array
     {
+        $namaPenghadap = $request->input('nama_penghadap', []);
+
+        if (!is_array($namaPenghadap)) {
+            $namaPenghadap = [];
+        }
+
         $request->merge([
             'nomor_bulanan' => trim($request->input('nomor_bulanan', '')),
             'sifat_jenis_akta' => trim($request->input('sifat_jenis_akta', '')),
-            'nama_penghadap' => trim($request->input('nama_penghadap', '')),
+            'nama_penghadap' => $this->cleanNamaPenghadap($namaPenghadap)->all(),
         ]);
 
         return $request->validate([
@@ -113,19 +119,28 @@ class SkmhtController extends Controller
             'tanggal_akta' => 'required|date',
             'sifat_jenis_akta' => 'required|string|max:100',
             'alamat' => 'nullable|string',
-            'nama_penghadap' => 'required|string|max:150',
+            'jam' => 'nullable|date_format:H:i',
+            'nama_penghadap' => 'required|array|min:1',
+            'nama_penghadap.*' => 'required|string|max:150',
         ], [
             'nomor_bulanan.required' => 'Nomor urut/bulanan wajib diisi.',
             'tanggal_akta.required' => 'Tanggal akta wajib diisi.',
             'sifat_jenis_akta.required' => 'Sifat/jenis akta wajib diisi.',
             'nama_penghadap.required' => 'Nama penghadap wajib diisi.',
-            'nama_penghadap.max' => 'Nama penghadap maksimal 150 karakter.',
+            'nama_penghadap.array' => 'Format nama penghadap tidak valid.',
+            'nama_penghadap.min' => 'Minimal harus ada satu nama penghadap.',
+            'nama_penghadap.*.required' => 'Nama penghadap tidak boleh kosong.',
+            'nama_penghadap.*.max' => 'Nama penghadap maksimal 150 karakter.',
         ]);
     }
 
     private function cleanNamaPenghadap(array $nama)
     {
-        return collect($nama)->map(fn ($item) => trim($item))->filter(fn ($item) => $item !== '')->unique()->values();
+        return collect($nama)
+            ->map(fn ($item) => trim((string) $item))
+            ->filter(fn ($item) => $item !== '')
+            ->unique()
+            ->values();
     }
 
     public function destroy(Skmht $skmht)
@@ -179,11 +194,16 @@ class SkmhtController extends Controller
                 'tanggal_akta' => $validated['tanggal_akta'],
                 'sifat_jenis_akta' => $validated['sifat_jenis_akta'],
                 'alamat' => $validated['alamat'] ?? null,
+                'jam' => $validated['jam'] ?? null,
             ]);
 
-            $skmht->penghadap()->create([
-                'nama_penghadap' => $validated['nama_penghadap'],
-            ]);
+            $skmht->penghadap()->createMany(
+                collect($validated['nama_penghadap'])
+                    ->map(fn ($nama) => [
+                        'nama_penghadap' => $nama,
+                    ])
+                    ->all()
+            );
         });
 
         return redirect()
@@ -203,11 +223,17 @@ class SkmhtController extends Controller
                 'tanggal_akta' => $validated['tanggal_akta'],
                 'sifat_jenis_akta' => $validated['sifat_jenis_akta'],
                 'alamat' => $validated['alamat'] ?? null,
+                'jam' => $validated['jam'] ?? null,
             ]);
 
-            $skmht->penghadap()->updateOrCreate(
-                [],
-                ['nama_penghadap' => $validated['nama_penghadap']]
+            $skmht->penghadap()->delete();
+
+            $skmht->penghadap()->createMany(
+                collect($validated['nama_penghadap'])
+                    ->map(fn ($nama) => [
+                        'nama_penghadap' => $nama,
+                    ])
+                    ->all()
             );
         });
 

@@ -41,8 +41,21 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             if (detailNamaPenghadap) {
-                detailNamaPenghadap.textContent =
-                    item.nama_penghadap || 'Belum ada nama';
+                detailNamaPenghadap.innerHTML = '';
+
+                const namaPenghadap = Array.isArray(item.nama_penghadap)
+                    ? item.nama_penghadap
+                    : (item.nama_penghadap ? [item.nama_penghadap] : []);
+
+                if (namaPenghadap.length > 0) {
+                    namaPenghadap.forEach(function (nama) {
+                        const span = document.createElement('span');
+                        span.textContent = nama;
+                        detailNamaPenghadap.appendChild(span);
+                    });
+                } else {
+                    detailNamaPenghadap.textContent = 'Belum ada nama penghadap';
+                }
             }
 
             detailModal.show();

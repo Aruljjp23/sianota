@@ -21,8 +21,12 @@ class Legalisasi extends Model
         'tanggal' => 'date',
     ];
 
-    public function penghadap()
+    public function penghadap(): HasMany
     {
-        return $this->hasMany(Penghadap::class, 'id_legalisasi', 'id_legalisasi');
+        return $this->hasMany(
+            Penghadap::class,
+            'id_legalisasi',
+            'id_legalisasi'
+        );
     }
 }

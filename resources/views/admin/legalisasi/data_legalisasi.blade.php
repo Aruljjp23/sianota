@@ -118,11 +118,13 @@
                                 {{ $item->sifat_surat }}
                             </td>
 
-                            <td>
+                           <td>
                                 <div class="legalisasi-names">
-                                    <span>
-                                        {{ $item->penghadap?->nama_penghadap ?? 'Belum ada nama' }}
-                                    </span>
+                                    @forelse ($item->penghadap as $penghadap)
+                                        <span>{{ $penghadap->nama_penghadap }}</span>
+                                    @empty
+                                        <span class="text-muted">Belum ada nama penghadap</span>
+                                    @endforelse
                                 </div>
                             </td>
 
@@ -319,7 +321,10 @@
             'tanggal' => $item->tanggal?->format('Y-m-d'),
             'tanggal_format' => $item->tanggal?->format('d/m/Y'),
             'sifat_surat' => $item->sifat_surat,
-            'nama_penghadap' => $item->penghadap?->nama_penghadap ?? '',
+            'nama_penghadap' => $item->penghadap
+                ->pluck('nama_penghadap')
+                ->values()
+                ->all(),
         ];
     })->values()->all();
 @endphp

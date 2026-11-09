@@ -7,9 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const userMethod = document.getElementById('userMethod');
 
     const userName = document.getElementById('userName');
-
     const userPassword = document.getElementById('userPassword');
-    const userPasswordConfirmation = document.getElementById('userPasswordConfirmation');
 
     const roleAdmin = document.getElementById('roleAdmin');
     const roleKaryawan = document.getElementById('roleKaryawan');
@@ -36,7 +34,6 @@ document.addEventListener('DOMContentLoaded', function () {
     function openUserModal() {
 
         userModal.classList.add('show');
-
         document.body.style.overflow = 'hidden';
 
         modalLabel.textContent = 'Tambah User';
@@ -44,31 +41,25 @@ document.addEventListener('DOMContentLoaded', function () {
         modalDescription.textContent = 'Tambahkan akun baru ke dalam sistem SIANOTA.';
 
         userForm.action = '/users';
-        userMethod.value = '';
+        userMethod.value = 'POST';
 
         userName.value = '';
-
         userPassword.value = '';
-        userPasswordConfirmation.value = '';
 
         roleAdmin.checked = false;
         roleKaryawan.checked = false;
 
         userPassword.required = true;
-        userPasswordConfirmation.required = true;
 
         passwordHelp.textContent = 'Password wajib diisi untuk user baru.';
     }
 
-
     function closeUserModal() {
 
         userModal.classList.remove('show');
-
         document.body.style.overflow = '';
 
     }
-
 
     function openEditModal(button) {
 
@@ -77,7 +68,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const role = button.dataset.role;
 
         userModal.classList.add('show');
-
         document.body.style.overflow = 'hidden';
 
         modalLabel.textContent = 'Edit User';
@@ -88,19 +78,15 @@ document.addEventListener('DOMContentLoaded', function () {
         userMethod.value = 'PUT';
 
         userName.value = name;
-
         userPassword.value = '';
-        userPasswordConfirmation.value = '';
 
         roleAdmin.checked = role === 'admin';
         roleKaryawan.checked = role === 'karyawan';
 
         userPassword.required = false;
-        userPasswordConfirmation.required = false;
 
         passwordHelp.textContent = 'Kosongkan jika password tidak ingin diubah.';
     }
-
 
     function openDeleteModal(button) {
 
@@ -112,28 +98,23 @@ document.addEventListener('DOMContentLoaded', function () {
         deleteUserForm.action = `/users/${id}`;
 
         deleteModal.classList.add('show');
-
         document.body.style.overflow = 'hidden';
     }
-
 
     function closeDeleteModal() {
 
         deleteModal.classList.remove('show');
-
         document.body.style.overflow = '';
-    }
 
+    }
 
     if (btnTambahUser) {
         btnTambahUser.addEventListener('click', openUserModal);
     }
 
-
     if (btnTambahUserEmpty) {
         btnTambahUserEmpty.addEventListener('click', openUserModal);
     }
-
 
     document.querySelectorAll('.btn-edit-user').forEach(function (button) {
 
@@ -143,7 +124,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 
-
     document.querySelectorAll('.btn-delete-user').forEach(function (button) {
 
         button.addEventListener('click', function () {
@@ -152,32 +132,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 
-
     if (btnCancelModal) {
         btnCancelModal.addEventListener('click', closeUserModal);
     }
-
 
     if (modalClose) {
         modalClose.addEventListener('click', closeUserModal);
     }
 
-
     if (btnDeleteCancel) {
         btnDeleteCancel.addEventListener('click', closeDeleteModal);
     }
 
-
     if (btnDeleteConfirm) {
 
         btnDeleteConfirm.addEventListener('click', function () {
-
             deleteUserForm.submit();
-
         });
 
     }
-
 
     document.querySelectorAll('.user-modal-overlay').forEach(function (overlay) {
 
@@ -185,13 +158,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 
-
     document.querySelectorAll('.delete-modal-overlay').forEach(function (overlay) {
 
         overlay.addEventListener('click', closeDeleteModal);
 
     });
-
 
     document.querySelectorAll('.password-toggle').forEach(function (button) {
 
@@ -201,26 +172,16 @@ document.addEventListener('DOMContentLoaded', function () {
             const input = document.getElementById(targetId);
             const icon = button.querySelector('i');
 
-            if (input.type === 'password') {
+            const isPassword = input.type === 'password';
 
-                input.type = 'text';
+            input.type = isPassword ? 'text' : 'password';
 
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-
-            } else {
-
-                input.type = 'password';
-
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-
-            }
+            icon.classList.toggle('fa-eye', !isPassword);
+            icon.classList.toggle('fa-eye-slash', isPassword);
 
         });
 
     });
-
 
     document.querySelectorAll('.alert-close').forEach(function (button) {
 
@@ -236,18 +197,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 
-
     document.addEventListener('keydown', function (event) {
 
         if (event.key === 'Escape') {
-
             closeUserModal();
             closeDeleteModal();
-
         }
 
     });
-
 
     const searchInput = document.querySelector('.user-search input');
 
@@ -260,13 +217,10 @@ document.addEventListener('DOMContentLoaded', function () {
             clearTimeout(searchTimer);
 
             searchTimer = setTimeout(function () {
-
                 searchInput.form.submit();
-
             }, 600);
 
         });
 
     }
-
 });

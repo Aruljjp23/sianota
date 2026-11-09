@@ -449,6 +449,7 @@
 
                 <div class="form-row">
 
+                    
                     <div class="form-group">
 
                         <label for="userPassword">
@@ -481,34 +482,6 @@
 
                     </div>
 
-
-                    <div class="form-group">
-
-                        <label for="userPasswordConfirmation">
-                            Konfirmasi Password
-                        </label>
-
-                        <div class="password-input">
-
-                            <input
-                                type="password"
-                                name="password_confirmation"
-                                id="userPasswordConfirmation"
-                                placeholder="Ulangi password"
-                                autocomplete="new-password"
-                            >
-
-                            <button
-                                type="button"
-                                class="password-toggle"
-                                data-target="userPasswordConfirmation"
-                            >
-                                <i class="fa-solid fa-eye"></i>
-                            </button>
-
-                        </div>
-
-                    </div>
 
                 </div>
 

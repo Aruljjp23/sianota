@@ -141,11 +141,7 @@
                     @endif
 
                     <td>
-                        @forelse ($item['penghadap'] as $nama)
-                            {{ $nama }}@if (!$loop->last)<br>@endif
-                        @empty
-                            -
-                        @endforelse
+                        {{ $item['penghadap'] ?? '-' }}
                     </td>
                 </tr>
             @empty

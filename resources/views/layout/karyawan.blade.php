@@ -197,7 +197,7 @@
                                 class="profile-logout"
                             >
                                 <i class="fa-solid fa-right-from-bracket"></i>
-                                <span>Keluar</span>
+                                <span>Logout</span>
                             </button>
 
                         </form>

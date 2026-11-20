@@ -295,13 +295,14 @@
 
                         <input
                             type="text"
-                            id="name"
                             name="name"
                             class="form-input @error('name') is-invalid @enderror"
                             placeholder="Masukkan username"
                             value="{{ old('name') }}"
                             maxlength="100"
                             autocomplete="username"
+                            pattern="[A-Za-z0-9]+"
+                            title="Username hanya boleh menggunakan huruf dan angka tanpa spasi."
                             required
                             autofocus
                         >
@@ -319,7 +320,7 @@
 
                     <div class="input-wrapper">
                         <i class="fa-solid fa-lock input-icon"></i>
-
+                        
                         <input
                             type="password"
                             id="password"
@@ -328,6 +329,8 @@
                             placeholder="Masukkan password"
                             maxlength="100"
                             autocomplete="current-password"
+                            pattern="[A-Za-z0-9!#_.]+"
+                            title="Password tidak boleh mengandung spasi. Karakter yang diperbolehkan: huruf, angka, ! # _ ."
                             required
                         >
 
@@ -364,6 +367,7 @@
     </main>
 
     <script>
+        
         const togglePassword = document.getElementById('togglePassword');
         const passwordInput = document.getElementById('password');
         const passwordIcon = togglePassword.querySelector('i');
@@ -381,6 +385,7 @@
                 isPassword ? 'Sembunyikan password' : 'Tampilkan password'
             );
         });
+
     </script>
 
 </body>

@@ -84,11 +84,27 @@ class SkmhtController extends Controller
             ->orderBy('sifat_jenis_akta')
             ->pluck('sifat_jenis_akta');
 
-        $tahunAkta = Skmht::query()
-            ->selectRaw('YEAR(tanggal_akta) AS tahun')
-            ->distinct()
-            ->orderByDesc('tahun')
-            ->pluck('tahun');
+        // Tambahan: mendukung pengujian menggunakan SQLite
+        if (DB::getDriverName() === 'sqlite') {
+            $tahunAkta = Skmht::query()
+                ->select('tanggal_akta')
+                ->whereNotNull('tanggal_akta')
+                ->distinct()
+                ->pluck('tanggal_akta')
+                ->map(function ($tanggal) {
+                    return date('Y', strtotime($tanggal));
+                })
+                ->unique()
+                ->sortDesc()
+                ->values();
+        } else {
+            // Codingan MySQL yang sudah ada tetap digunakan
+            $tahunAkta = Skmht::query()
+                ->selectRaw('YEAR(tanggal_akta) AS tahun')
+                ->distinct()
+                ->orderByDesc('tahun')
+                ->pluck('tahun');
+        }
 
         return view('admin.skmht.data_skmht', compact(
             'skmhts',

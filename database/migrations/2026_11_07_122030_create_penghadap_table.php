@@ -1,4 +1,3 @@
-
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -14,13 +13,11 @@ return new class extends Migration
 
             $table->foreignId('id_skmht')
                 ->nullable()
-                ->unique()
                 ->constrained('skmht', 'id_skmht')
                 ->cascadeOnDelete();
 
             $table->foreignId('id_legalisasi')
                 ->nullable()
-                ->unique()
                 ->constrained('legalisasi', 'id_legalisasi')
                 ->cascadeOnDelete();
 

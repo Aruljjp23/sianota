@@ -13,25 +13,35 @@ class AuthController extends Controller
     {
         return view('login');
     }
-    
+
     public function loginProcess(Request $request)
     {
         $credentials = $request->validate([
-            'name' => 'required|string|max:100',
-            'password' => 'required|string|max:100',
+            'name' => [
+                'required',
+                'string',
+                'max:100',
+                'regex:/\A[a-zA-Z0-9]+\z/',
+            ],
+            'password' => [
+                'required',
+                'string',
+                'max:100',
+                'regex:/\A[a-zA-Z0-9!#_.]+\z/',
+            ],
         ], [
             'name.required' => 'Username wajib diisi.',
             'name.string' => 'Username harus berupa teks.',
             'name.max' => 'Username maksimal 100 karakter.',
+            'name.regex' => 'Username hanya boleh menggunakan huruf dan angka tanpa spasi atau simbol.',
 
             'password.required' => 'Password wajib diisi.',
             'password.string' => 'Password harus berupa teks.',
             'password.max' => 'Password maksimal 100 karakter.',
+            'password.regex' => 'Password tidak boleh mengandung spasi atau karakter yang tidak diizinkan.',
         ]);
 
-        $user = User::whereRaw('BINARY name = ?', [
-            $credentials['name']
-        ])->first();
+        $user = User::where('name', $credentials['name'])->first();
 
         if (!$user) {
             return back()
@@ -72,17 +82,34 @@ class AuthController extends Controller
     public function registerProcess(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:100',
-            'password' => 'required|string|min:6|max:100',
+            'name' => [
+                'required',
+                'string',
+                'min:3',
+                'max:100',
+                'regex:/\A[a-zA-Z0-9]+\z/',
+                'unique:users,name',
+            ],
+            'password' => [
+                'required',
+                'string',
+                'min:6',
+                'max:100',
+                'regex:/\A[a-zA-Z0-9!#_.]+\z/',
+            ],
         ], [
             'name.required' => 'Username wajib diisi.',
             'name.string' => 'Username harus berupa teks.',
+            'name.min' => 'Username minimal 3 karakter.',
             'name.max' => 'Username maksimal 100 karakter.',
+            'name.regex' => 'Username hanya boleh menggunakan huruf dan angka tanpa spasi atau simbol.',
+            'name.unique' => 'Username sudah digunakan. Silakan gunakan username lain.',
 
             'password.required' => 'Password wajib diisi.',
             'password.string' => 'Password harus berupa teks.',
             'password.min' => 'Password minimal 6 karakter.',
             'password.max' => 'Password maksimal 100 karakter.',
+            'password.regex' => 'Password hanya boleh menggunakan huruf, angka, dan simbol ! # _ . tanpa spasi.',
         ]);
 
         $role = User::exists() ? 'karyawan' : 'admin';

@@ -288,7 +288,11 @@
                             class="form-input"
                             placeholder="Masukkan username"
                             value="{{ old('name') }}"
-                            autocomplete="name"
+                            maxlength="100"
+                            minlength="3"
+                            autocomplete="username"
+                            pattern="[A-Za-z0-9]+"
+                            title="Username minimal 3 karakter dan hanya boleh menggunakan huruf serta angka tanpa spasi."
                             required
                         >
 
@@ -312,7 +316,11 @@
                             name="password"
                             class="form-input"
                             placeholder="Masukkan password"
+                            minlength="6"
+                            maxlength="100"
                             autocomplete="new-password"
+                            pattern="[A-Za-z0-9!#_.]+"
+                            title="Password minimal 6 karakter, tanpa spasi. Karakter yang diperbolehkan: huruf, angka, ! # _ ."
                             required
                         >
 
@@ -352,11 +360,11 @@
 
 
     <script>
+        
         const togglePassword = document.getElementById('togglePassword');
         const passwordInput = document.getElementById('password');
 
         togglePassword.addEventListener('click', function () {
-
             const isPassword = passwordInput.type === 'password';
 
             passwordInput.type = isPassword ? 'text' : 'password';
@@ -366,7 +374,12 @@
             icon.classList.toggle('fa-eye', !isPassword);
             icon.classList.toggle('fa-eye-slash', isPassword);
 
+            this.setAttribute(
+                'aria-label',
+                isPassword ? 'Sembunyikan password' : 'Tampilkan password'
+            );
         });
+
     </script>
 
 </body>

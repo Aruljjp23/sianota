@@ -292,7 +292,7 @@
                             minlength="3"
                             autocomplete="username"
                             pattern="[A-Za-z0-9]+"
-                            title="Username minimal 3 karakter dan hanya boleh menggunakan huruf serta angka tanpa spasi."
+                            title="Username minimal 6 karakter dan hanya boleh menggunakan huruf serta angka tanpa spasi."
                             required
                         >
 

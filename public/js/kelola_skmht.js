@@ -25,51 +25,124 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function buatPenghadapInput(nama = '') {
+    function buatPenghadapInput(nama = '', bisaHapus = true) {
         const wrapper = document.createElement('div');
         wrapper.className = 'penghadap-input';
 
+        const nomor = document.createElement('span');
+        nomor.className = 'penghadap-number';
+
         const input = document.createElement('input');
         input.type = 'text';
-        input.name = 'nama_penghadap';
+        input.name = 'nama_penghadap[]';
         input.className = 'form-control';
         input.placeholder = 'Nama penghadap';
         input.maxLength = 150;
         input.value = nama;
         input.required = true;
 
+        const tombolHapus = document.createElement('button');
+        tombolHapus.type = 'button';
+        tombolHapus.className = 'remove-penghadap';
+        tombolHapus.title = 'Hapus nama penghadap';
+        tombolHapus.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+
+        if (!bisaHapus) {
+            tombolHapus.style.display = 'none';
+        }
+
+        tombolHapus.addEventListener('click', function () {
+            if (!bisaHapus) {
+                return;
+            }
+
+            wrapper.remove();
+
+            const container = document.getElementById('penghadapContainer');
+
+            if (container) {
+                perbaruiNomorPenghadap(container);
+            }
+        });
+
+        wrapper.appendChild(nomor);
         wrapper.appendChild(input);
+        wrapper.appendChild(tombolHapus);
 
         return wrapper;
     }
 
-    function aturPenghadapInput(container, nama = '') {
+    function perbaruiNomorPenghadap(container) {
+        const rows = container.querySelectorAll('.penghadap-input');
+
+        rows.forEach(function (row, index) {
+            const nomor = row.querySelector('.penghadap-number');
+            const tombolHapus = row.querySelector('.remove-penghadap');
+
+            if (nomor) {
+                nomor.textContent = index + 1;
+            }
+
+            if (tombolHapus) {
+                tombolHapus.disabled = rows.length <= 1;
+            }
+        });
+    }
+
+    function tambahBarisPenghadap(container, nama = '', bisaHapus = true) {
+        if (!container) {
+            return;
+        }
+
+        container.appendChild(
+            buatPenghadapInput(nama, bisaHapus)
+        );
+
+        perbaruiNomorPenghadap(container);
+    }
+
+    function aturPenghadapInput(
+        container,
+        daftarNama = [],
+        bisaHapus = true
+    ) {
         if (!container) {
             return;
         }
 
         container.innerHTML = '';
-        container.appendChild(buatPenghadapInput(nama));
+
+        if (!Array.isArray(daftarNama) || daftarNama.length === 0) {
+            daftarNama = [''];
+        }
+
+        daftarNama.forEach(function (nama) {
+            tambahBarisPenghadap(
+                container,
+                nama,
+                bisaHapus
+            );
+        });
+
+        perbaruiNomorPenghadap(container);
     }
 
     const penghadapContainer = document.getElementById('penghadapContainer');
     const tambahPenghadap = document.getElementById('tambahPenghadap');
 
     if (penghadapContainer) {
-        aturPenghadapInput(penghadapContainer);
+        aturPenghadapInput(penghadapContainer, [''], true);
+    }
 
-        if (tambahPenghadap) {
-            tambahPenghadap.style.display = 'none';
-        }
+    if (tambahPenghadap && penghadapContainer) {
+        tambahPenghadap.addEventListener('click', function () {
+            tambahBarisPenghadap(penghadapContainer, '', true);
+        });
     }
 
     const detailModalElement = document.getElementById('detailSkmhtModal');
 
     if (detailModalElement) {
-        const detailModal = bootstrap.Modal.getOrCreateInstance(
-            detailModalElement
-        );
-
         const detailNomorBulanan = document.getElementById('detailNomorBulanan');
         const detailTanggalAkta = document.getElementById('detailTanggalAkta');
         const detailSifatJenis = document.getElementById('detailSifatJenis');
@@ -96,24 +169,34 @@ document.addEventListener('DOMContentLoaded', function () {
                 detailJam.textContent = item.jam || '-';
                 detailAlamat.textContent = item.alamat || '-';
 
-                const namaPenghadap = item.nama_penghadap || '';
+                const daftarNama = item.penghadap || [];
 
-                if (detailPenghadap) {
-                    detailPenghadap.innerHTML = '';
+                detailPenghadap.innerHTML = '';
 
+                if (daftarNama.length > 0) {
+                    daftarNama.forEach(function (nama, index) {
+                        const namaElement = document.createElement('div');
+
+                        namaElement.className = 'detail-name';
+                        namaElement.textContent = (index + 1) + '. ' + nama;
+
+                        detailPenghadap.appendChild(namaElement);
+                    });
+                } else {
                     const namaElement = document.createElement('div');
+
                     namaElement.className = 'detail-name';
-                    namaElement.textContent = namaPenghadap || 'Belum ada nama penghadap';
+                    namaElement.textContent = 'Belum ada nama penghadap';
 
                     detailPenghadap.appendChild(namaElement);
                 }
 
-                if (detailJumlahPenghadap) {
-                    detailJumlahPenghadap.textContent =
-                        namaPenghadap ? '1 Penghadap' : '0 Penghadap';
-                }
+                detailJumlahPenghadap.textContent =
+                    daftarNama.length + ' Penghadap';
 
-                detailModal.show();
+                bootstrap.Modal.getOrCreateInstance(
+                    detailModalElement
+                ).show();
             });
         });
     }
@@ -123,10 +206,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const editContainer = document.getElementById('penghadapEditContainer');
 
     if (editModalElement && editForm && editContainer) {
-        const editModal = bootstrap.Modal.getOrCreateInstance(
-            editModalElement
-        );
-
         const editNomorBulanan = document.getElementById('editNomorBulanan');
         const editTanggalAkta = document.getElementById('editTanggalAkta');
         const editSifatJenis = document.getElementById('editSifatJenis');
@@ -151,17 +230,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 editJam.value = item.jam || '';
                 editAlamat.value = item.alamat || '';
 
+                const daftarNama = item.penghadap || [];
+
                 aturPenghadapInput(
                     editContainer,
-                    item.nama_penghadap || ''
+                    daftarNama,
+                    false
                 );
 
-                editForm.action = editForm.dataset.url.replace(
-                    ':id',
-                    id
-                );
+                editForm.action = editForm.dataset.url.replace(':id', id);
 
-                editModal.show();
+                bootstrap.Modal.getOrCreateInstance(
+                    editModalElement
+                ).show();
             });
         });
     }
@@ -173,10 +254,7 @@ document.addEventListener('DOMContentLoaded', function () {
             button.addEventListener('click', function () {
                 const id = this.dataset.id;
 
-                deleteForm.action = deleteForm.dataset.url.replace(
-                    ':id',
-                    id
-                );
+                deleteForm.action = deleteForm.dataset.url.replace(':id', id);
             });
         });
     }

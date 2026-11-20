@@ -433,17 +433,24 @@
                 <div class="form-group">
 
                     <label for="userName">
-                        Nama Lengkap
+                        Username
                     </label>
 
                     <input
                         type="text"
                         name="name"
                         id="userName"
-                        placeholder="Masukkan nama lengkap"
-                        autocomplete="off"
+                        placeholder="Masukkan username"
+                        autocomplete="username"
+                        maxlength="100"
+                        pattern="[a-zA-Z0-9]+"
+                        title="Username hanya boleh menggunakan huruf dan angka tanpa spasi atau simbol."
                         required
                     >
+
+                    <small>
+                        Gunakan huruf dan angka tanpa spasi atau simbol.
+                    </small>
 
                 </div>
 
@@ -464,6 +471,10 @@
                                 id="userPassword"
                                 placeholder="Masukkan password"
                                 autocomplete="new-password"
+                                minlength="6"
+                                maxlength="100"
+                                pattern="[A-Za-z0-9!@#$%&amp;*_-]+"
+                                title="Password minimal 6 karakter tanpa spasi. Gunakan huruf, angka, atau simbol ! @ # $ % &amp; * _ -."
                             >
 
                             <button
@@ -477,7 +488,7 @@
                         </div>
 
                         <small id="passwordHelp">
-                            Password wajib diisi untuk user baru.
+                            Password minimal 6 karakter tanpa spasi.
                         </small>
 
                     </div>

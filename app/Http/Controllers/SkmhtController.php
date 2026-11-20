@@ -84,7 +84,6 @@ class SkmhtController extends Controller
             ->orderBy('sifat_jenis_akta')
             ->pluck('sifat_jenis_akta');
 
-        // Tambahan: mendukung pengujian menggunakan SQLite
         if (DB::getDriverName() === 'sqlite') {
             $tahunAkta = Skmht::query()
                 ->select('tanggal_akta')
@@ -98,7 +97,6 @@ class SkmhtController extends Controller
                 ->sortDesc()
                 ->values();
         } else {
-            // Codingan MySQL yang sudah ada tetap digunakan
             $tahunAkta = Skmht::query()
                 ->selectRaw('YEAR(tanggal_akta) AS tahun')
                 ->distinct()
@@ -127,6 +125,7 @@ class SkmhtController extends Controller
         $request->merge([
             'nomor_bulanan' => trim($request->input('nomor_bulanan', '')),
             'sifat_jenis_akta' => trim($request->input('sifat_jenis_akta', '')),
+            'alamat' => trim($request->input('alamat', '')),
             'nama_penghadap' => $this->cleanNamaPenghadap($namaPenghadap)->all(),
         ]);
 

@@ -31,6 +31,58 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const btnDeleteCancel = document.getElementById('btnDeleteCancel');
 
+    const passwordRegex = /^[A-Za-z0-9!@#$%&*_-]+$/;
+
+    if (userPassword && passwordHelp) {
+
+        userPassword.addEventListener('input', function () {
+
+            const password = this.value;
+
+            if (password === '') {
+
+                passwordHelp.textContent = userPassword.required
+                    ? 'Password wajib diisi minimal 6 karakter tanpa spasi.'
+                    : 'Kosongkan jika password tidak ingin diubah.';
+
+                passwordHelp.style.color = '';
+                return;
+            }
+
+            if (/\s/.test(password)) {
+
+                passwordHelp.textContent =
+                    'Password tidak boleh mengandung spasi.';
+
+                passwordHelp.style.color = '#dc3545';
+                return;
+            }
+
+            if (!passwordRegex.test(password)) {
+
+                passwordHelp.textContent =
+                    'Password mengandung karakter yang tidak diperbolehkan.';
+
+                passwordHelp.style.color = '#dc3545';
+                return;
+            }
+
+            if (password.length < 6) {
+
+                passwordHelp.textContent =
+                    'Password minimal 6 karakter.';
+
+                passwordHelp.style.color = '#dc3545';
+                return;
+            }
+
+            passwordHelp.textContent = 'Password valid.';
+            passwordHelp.style.color = '#198754';
+
+        });
+
+    }
+
     function openUserModal() {
 
         userModal.classList.add('show');
@@ -51,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         userPassword.required = true;
 
-        passwordHelp.textContent = 'Password wajib diisi untuk user baru.';
+        passwordHelp.textContent = 'Password minimal 6 karakter tanpa spasi. Gunakan huruf, angka, atau simbol yang diperbolehkan.';
     }
 
     function closeUserModal() {
@@ -85,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         userPassword.required = false;
 
-        passwordHelp.textContent = 'Kosongkan jika password tidak ingin diubah.';
+        passwordHelp.textContent = 'Kosongkan jika tidak ingin mengubah password. Password baru minimal 6 karakter tanpa spasi.';
     }
 
     function openDeleteModal(button) {

@@ -51,13 +51,36 @@ class UserController extends Controller
         $this->adminOnly();
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'password' => 'required|string|min:6',
-            'role' => ['required', Rule::in(['admin', 'karyawan'])],
+            'name' => [
+                'required',
+                'string',
+                'max:100',
+                'regex:/\A[a-zA-Z0-9]+\z/',
+                'unique:users,name',
+            ],
+
+            'password' => [
+                'required',
+                'string',
+                'min:6',
+                'regex:/^[A-Za-z0-9!@#$%&*_-]+$/',
+            ],
+
+            'role' => [
+                'required',
+                Rule::in(['admin', 'karyawan']),
+            ],
         ], [
-            'name.required' => 'Nama lengkap wajib diisi.',
+            'name.required' => 'Username wajib diisi.',
+            'name.max' => 'Username maksimal 100 karakter.',
+            'name.regex' => 'Username hanya boleh menggunakan huruf dan angka tanpa spasi atau simbol.',
+            'name.unique' => 'Username sudah digunakan.',
+
             'password.required' => 'Password wajib diisi.',
             'password.min' => 'Password minimal 6 karakter.',
+            'password.max' => 'Password maksimal 100 karakter.',
+            'password.regex' => 'Password mengandung karakter yang tidak diperbolehkan atau spasi.',
+
             'role.required' => 'Role user wajib dipilih.',
             'role.in' => 'Role yang dipilih tidak valid.',
         ]);
@@ -78,12 +101,35 @@ class UserController extends Controller
         $this->adminOnly();
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'password' => 'nullable|string|min:6',
-            'role' => ['required', Rule::in(['admin', 'karyawan'])],
+            'name' => [
+                'required',
+                'string',
+                'max:100',
+                'regex:/\A[a-zA-Z0-9]+\z/',
+                Rule::unique('users', 'name')->ignore($user->id),
+            ],
+
+            'password' => [
+                'nullable',
+                'string',
+                'min:6',
+                'regex:/^[A-Za-z0-9!@#$%&*_-]+$/',
+            ],
+
+            'role' => [
+                'required',
+                Rule::in(['admin', 'karyawan']),
+            ],
         ], [
-            'name.required' => 'Nama lengkap wajib diisi.',
+            'name.required' => 'Username wajib diisi.',
+            'name.max' => 'Username maksimal 100 karakter.',
+            'name.regex' => 'Username hanya boleh menggunakan huruf dan angka tanpa spasi atau simbol.',
+            'name.unique' => 'Username sudah digunakan.',
+
             'password.min' => 'Password minimal 6 karakter.',
+            'password.max' => 'Password maksimal 100 karakter.',
+            'password.regex' => 'Password tidak boleh mengandung spasi atau karakter yang tidak diperbolehkan.',
+
             'role.required' => 'Role user wajib dipilih.',
             'role.in' => 'Role yang dipilih tidak valid.',
         ]);

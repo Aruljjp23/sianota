@@ -402,7 +402,6 @@
 
                         </div>
 
-
                         <div id="penghadapContainer">
 
                             <div class="penghadap-input">
@@ -421,6 +420,7 @@
                                 <button
                                     type="button"
                                     class="remove-penghadap"
+                                    title="Hapus nama penghadap"
                                     disabled
                                 >
                                     <i class="fa-solid fa-xmark"></i>
@@ -666,15 +666,6 @@
                                     Perbarui nama penghadap jika diperlukan.
                                 </span>
                             </div>
-
-                            <button
-                                type="button"
-                                class="btn-add-penghadap"
-                                id="tambahPenghadapEdit"
-                            >
-                                <i class="fa-solid fa-plus"></i>
-                                Tambah Nama
-                            </button>
 
                         </div>
 

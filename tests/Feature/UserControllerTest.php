@@ -66,21 +66,21 @@ class UserControllerTest extends TestCase
         $admin = $this->buatAdmin();
 
         User::create([
-            'name' => 'Arul Testing',
+            'name' => 'ArulTesting',
             'password' => 'password123',
             'role' => 'karyawan',
         ]);
 
         $response = $this->actingAs($admin)
             ->get(route('users.data_user', [
-                'search' => 'Arul Testing',
+                'search' => 'ArulTesting',
             ]));
 
         $response->assertOk();
         $response->assertViewIs('admin.users.data_user');
 
         $response->assertViewHas('users', function ($users) {
-            return $users->contains('name', 'Arul Testing')
+            return $users->contains('name', 'ArulTesting')
                 && !$users->contains('name', 'admin_testing');
         });
     }
@@ -92,7 +92,7 @@ class UserControllerTest extends TestCase
 
         $response = $this->actingAs($admin)
             ->post(route('users.store'), [
-                'name' => 'User Baru',
+                'name' => 'UserBaru',
                 'password' => 'password123',
                 'role' => 'karyawan',
             ]);
@@ -101,7 +101,7 @@ class UserControllerTest extends TestCase
         $response->assertSessionHas('success');
 
         $this->assertDatabaseHas('users', [
-            'name' => 'User Baru',
+            'name' => 'UserBaru',
             'role' => 'karyawan',
         ]);
     }
@@ -132,7 +132,7 @@ class UserControllerTest extends TestCase
 
         $response = $this->actingAs($admin)
             ->post(route('users.store'), [
-                'name' => 'User Baru',
+                'name' => 'UserBaru',
                 'password' => '12345',
                 'role' => 'karyawan',
             ]);
@@ -140,7 +140,7 @@ class UserControllerTest extends TestCase
         $response->assertSessionHasErrors('password');
 
         $this->assertDatabaseMissing('users', [
-            'name' => 'User Baru',
+            'name' => 'UserBaru',
         ]);
     }
 
@@ -151,7 +151,7 @@ class UserControllerTest extends TestCase
 
         $response = $this->actingAs($admin)
             ->post(route('users.store'), [
-                'name' => 'User Baru',
+                'name' => 'UserBaru',
                 'password' => 'password123',
                 'role' => 'superadmin',
             ]);
@@ -159,7 +159,7 @@ class UserControllerTest extends TestCase
         $response->assertSessionHasErrors('role');
 
         $this->assertDatabaseMissing('users', [
-            'name' => 'User Baru',
+            'name' => 'UserBaru',
         ]);
     }
 
@@ -169,7 +169,7 @@ class UserControllerTest extends TestCase
         $admin = $this->buatAdmin();
 
         $user = User::create([
-            'name' => 'User Lama',
+            'name' => 'UserLama',
             'password' => 'password123',
             'role' => 'karyawan',
         ]);
@@ -178,7 +178,7 @@ class UserControllerTest extends TestCase
 
         $response = $this->actingAs($admin)
             ->put(route('users.update', $user->id), [
-                'name' => 'User Diperbarui',
+                'name' => 'UserDiperbarui',
                 'password' => '',
                 'role' => 'admin',
             ]);
@@ -188,7 +188,7 @@ class UserControllerTest extends TestCase
 
         $user->refresh();
 
-        $this->assertEquals('User Diperbarui', $user->name);
+        $this->assertEquals('UserDiperbarui', $user->name);
         $this->assertEquals('admin', $user->role);
         $this->assertEquals($passwordLama, $user->password);
     }
@@ -199,14 +199,14 @@ class UserControllerTest extends TestCase
         $admin = $this->buatAdmin();
 
         $user = User::create([
-            'name' => 'User Lama',
+            'name' => 'UserLama',
             'password' => 'password123',
             'role' => 'karyawan',
         ]);
 
         $response = $this->actingAs($admin)
             ->put(route('users.update', $user->id), [
-                'name' => 'User Lama',
+                'name' => 'UserLama',
                 'password' => 'passwordbaru123',
                 'role' => 'karyawan',
             ]);
@@ -227,7 +227,7 @@ class UserControllerTest extends TestCase
         $admin = $this->buatAdmin();
 
         $user = User::create([
-            'name' => 'User Hapus',
+            'name' => 'UserHapus',
             'password' => 'password123',
             'role' => 'karyawan',
         ]);
